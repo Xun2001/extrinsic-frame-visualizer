@@ -1,30 +1,24 @@
-# Extrinsic Visualizer
+# Extrinsic Visualizer Plus
 
-用于验证多传感器外参矩阵的 Python 可视化工具，主要面向 LiDAR、IMU、Camera 等坐标系之间的外参检查。
-
-主脚本为 [extrinsic_visualizer.py](./extrinsic_visualizer.py)。
+用于验证多传感器外参（LiDAR/IMU/Camera 等）的可视化与报告工具。
+主脚本：`extrinsic_visualizer_plus.py`
 
 ## 功能
 
-- 支持输入 `4x4` 齐次外参矩阵 `T_target_source`
-- 默认数学约定为 `p_target = T_target_source @ p_source`
-- 支持命令行直接传入矩阵
-- 支持从 `txt` 或 `json` 文件加载矩阵
-- 支持 `--inverse`，可将输入矩阵先取逆后再显示
-- 支持通过 `--source` 和 `--target` 指定坐标系名称
-- 使用 Plotly 生成可交互 HTML 页面
-- 在同一 3D 场景中显示 `target` 和 `source` 两个坐标系
-- 支持预设视角切换
-- 在终端输出旋转矩阵诊断信息
+- 支持多种输入格式并统一转换为 4x4 外参矩阵
+- 支持矩阵求逆（`--inverse`）
+- 支持平移单位换算（`m/cm/mm`）
+- 生成单个 HTML 报告页面：
+  - 数值报告（矩阵、平移、Euler、四元数、轴角、旋转诊断）
+  - 3D 交互坐标系可视化（Plotly）
+- 支持视角下拉切换（沿 target/source 各轴正反方向观察）
+- 可选自动在浏览器打开（`--open`）
+
+## 示例展示
+![可旋转三维坐标系](fig/vis-1.jpg "可旋转三维坐标系")
+![整体页面](fig/vis-2.jpg "整体页面")
 
 ## 安装依赖
-
-项目只依赖：
-
-- `numpy`
-- `plotly`
-
-安装方式：
 
 ```bash
 pip install numpy plotly
@@ -32,192 +26,132 @@ pip install numpy plotly
 
 ## 数学约定
 
-输入矩阵采用如下定义：
+采用如下约定：
 
 ```text
 p_target = T_target_source @ p_source
 ```
 
-其中：
+- `T[:3,:3]`：`source -> target` 的旋转
+- `T[:3,3]`：`source` 原点在 `target` 坐标系下的位置
 
-- `T[:3, :3]` 表示从 `source` 坐标系到 `target` 坐标系的旋转矩阵
-- `T[:3, 3]` 表示 `source` 坐标系原点在 `target` 坐标系下的位置
-
-如果你手里的是反方向矩阵 `T_source_target`，可通过 `--inverse` 自动取逆后再显示。
-
-## 输入格式
-
-### 1. 直接通过命令行传矩阵
-
-支持以下格式：
-
-```bash
-python extrinsic_visualizer.py \
-  --matrix "1 0 0 0.4; 0 0 -1 0.1; 0 1 0 0.2; 0 0 0 1" \
-  --source LiDAR \
-  --target IMU
-```
-
-也支持 JSON 风格：
-
-```bash
-python extrinsic_visualizer.py \
-  --matrix "[[1,0,0,0.4],[0,0,-1,0.1],[0,1,0,0.2],[0,0,0,1]]" \
-  --source Camera \
-  --target LiDAR
-```
-
-### 2. 从 txt 文件加载
-
-`txt` 文件可以是逐行 4x4：
+Euler 角约定（脚本内固定）：
 
 ```text
-1 0 0 0.4
-0 0 -1 0.1
-0 1 0 0.2
-0 0 0 1
+R = Rz(yaw) @ Ry(pitch) @ Rx(roll)
 ```
 
-使用方式：
+即 ZYX yaw-pitch-roll。
+
+## 快速开始
+
+### 1. 用 4x4 文件输入
 
 ```bash
-python extrinsic_visualizer.py \
-  --matrix-file extrinsic.txt \
-  --source LiDAR \
-  --target Camera
-```
-
-### 3. 从 json 文件加载
-
-支持以下 JSON 结构：
-
-```json
-[[1, 0, 0, 0.4], [0, 0, -1, 0.1], [0, 1, 0, 0.2], [0, 0, 0, 1]]
-```
-
-或带字段名：
-
-```json
-{
-  "T_target_source": [
-    [1, 0, 0, 0.4],
-    [0, 0, -1, 0.1],
-    [0, 1, 0, 0.2],
-    [0, 0, 0, 1]
-  ]
-}
-```
-
-已识别字段包括：
-
-- `matrix`
-- `T`
-- `transform`
-- `extrinsic`
-- `T_target_source`
-- `T_source_target`
-
-## 使用示例
-
-### 生成 HTML
-
-```bash
-python extrinsic_visualizer.py \
-  --matrix "1 0 0 0.4; 0 0 -1 0.1; 0 1 0 0.2; 0 0 0 1" \
+python extrinsic_visualizer_plus.py \
+  --file example_data/example_np.json \
   --source LiDAR \
   --target IMU \
   --output lidar_to_imu.html
 ```
 
-### 输入反方向矩阵并取逆
+### 2. 直接传 ROS 四元数格式（tx ty tz qx qy qz qw）
 
 ```bash
-python extrinsic_visualizer.py \
-  --matrix-file imu_to_lidar.json \
-  --inverse \
+python extrinsic_visualizer_plus.py \
+  --input "0.1 0.2 0.3 0 0 0 1" \
+  --format tq_xyzw \
+  --source Camera \
+  --target Base \
+  --output cam_to_base.html
+```
+
+### 3. 传平移 + RPY（角度制）
+
+```bash
+python extrinsic_visualizer_plus.py \
+  --input "0.1 0.2 0.3 10 0 90" \
+  --format xyzrpy_deg \
   --source LiDAR \
-  --target IMU \
-  --output lidar_in_imu.html
+  --target IMU
 ```
 
-### 查看帮助
+### 4. 输入反方向矩阵并取逆
 
 ```bash
-python extrinsic_visualizer.py --help
+python extrinsic_visualizer_plus.py \
+  --file example_data/example.json \
+  --inverse \
+  --source IMU \
+  --target LiDAR
 ```
 
-## 输出内容
+## 输入格式
 
-脚本会生成一个可直接在浏览器打开的 HTML 文件，并显示：
+通过 `--format` 指定：
 
-- `target` 坐标系固定在原点
-- `source` 坐标系按输入外参旋转和平移后显示
-- 两个坐标系的 `+X / +Y / +Z` 箭头
-- 坐标轴标签，如 `IMU +X`、`LiDAR +Z`
-- 原点 marker 和名称标签
-- legend，用于区分各条轴所属坐标系
+- `auto`：
+  - 16 个数 -> 4x4
+  - 7 个数 -> `tx ty tz qx qy qz qw`
+  - 6 个数 -> `tx ty tz roll pitch yaw`（默认按度）
+- `matrix4x4`：严格 16 个数（可写成矩阵样式）
+- `flat16`：严格 16 个数（按行 reshape）
+- `tq_xyzw`：`tx ty tz qx qy qz qw`
+- `tq_wxyz`：`tx ty tz qw qx qy qz`
+- `xyzrpy_deg`：`tx ty tz roll pitch yaw`（degree）
+- `xyzrpy_rad`：`tx ty tz roll pitch yaw`（radian）
 
-颜色约定：
-
-- `X` 轴红色
-- `Y` 轴绿色
-- `Z` 轴蓝色
-
-## 视角切换
-
-页面顶部提供 Plotly 下拉菜单，支持：
-
-- 默认斜视图
-- 沿 `target` 坐标系的 `+X / -X / +Y / -Y / +Z / -Z` 方向查看
-- 沿 `source` 坐标系的 `+X / -X / +Y / -Y / +Z / -Z` 方向查看
-
-切换后会自动更新 Plotly 的 `camera eye/up` 参数，实现对应正视图。
-
-## 终端诊断输出
-
-运行时终端会打印：
-
-- 输入矩阵
-- 用于显示的矩阵
-- 平移向量 `t`
-- `det(R)`
-- `||R.T @ R - I||_F`
-
-当以下情况发生时会输出 warning：
-
-- `det(R)` 明显不接近 `1`
-- 旋转矩阵正交误差较大
-
-这些 warning 通常意味着：
-
-- 坐标变换方向可能反了
-- 行列约定可能不一致
-- 旋转矩阵数值精度有问题
-- 输入矩阵本身不是合法刚体变换
+说明：解析时会提取文本中的数字，因此空格、逗号、分号、换行、`[]` 等分隔都可接受。
 
 ## 命令行参数
 
 ```text
---matrix         直接输入 4x4 矩阵
---matrix-file    从 txt/json 文件读取矩阵
---inverse        先对输入矩阵求逆
---source         source 坐标系名称
---target         target 坐标系名称
---output         输出 HTML 文件路径
+--input               输入变换文本
+--file                输入文件（txt/json，按文本解析）
+--format              输入格式，默认 auto
+--translation-unit    输入平移单位：m/cm/mm（输出统一为 m）
+--source              源坐标系名称
+--target              目标坐标系名称
+--axis-length         可视化坐标轴长度（米）
+--inverse             可视化前先求逆
+--output              输出 HTML 路径
+--open                生成后自动浏览器打开
 ```
 
-## 典型使用流程
+查看完整帮助：
 
-1. 准备 `T_target_source`
-2. 明确 `source` 和 `target` 的命名
-3. 如果拿到的是反方向矩阵，则加上 `--inverse`
-4. 运行脚本生成 HTML
-5. 打开 HTML，检查两个坐标系的相对姿态和轴向
-6. 对照终端里的 `det(R)` 与正交误差判断矩阵质量
+```bash
+python extrinsic_visualizer_plus.py --help
+```
+
+## 输出内容
+
+运行后会输出：
+
+1. 终端信息
+- 4x4 外参矩阵
+- 平移向量 `t` 及模长
+- Euler ZYX 角度（deg）
+- 旋转诊断：`det(R)` 与 `||R.T @ R - I||_F`
+
+2. HTML 报告页面
+- 矩阵表格
+- 平移信息（米）
+- Euler / Quaternion / Axis-angle
+- 旋转合法性检查提示
+- 3D 坐标系交互图与视角切换菜单
+
+## 打开 HTML
+
+- 本机直接打开：
+  - Linux: `xdg-open <output.html>`
+  - macOS: `open <output.html>`
+  - Windows: `start <output.html>`
+- 远程服务器可用静态服务：
+
 
 ## 注意事项
 
-- 本工具假设输入是刚体变换矩阵
-- 如果矩阵不可逆，`--inverse` 会报错
-- 如果当前 Python 环境缺少依赖，脚本无法运行
-- 生成的是独立 HTML，可直接分享或离线打开
+- 平移单位会先按 `--translation-unit` 转成米，再执行 `--inverse`。
+- 如果同时传 `--input` 和 `--file`，代码会优先使用 `--input`。
+- 旋转诊断异常（`det(R)` 偏离 1 或正交误差大）通常意味着输入方向、单位或旋转定义有问题。

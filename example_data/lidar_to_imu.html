@@ -1,0 +1,143 @@
+
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8"/>
+      <title>Extrinsic Visualizer</title>
+      
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        background: #f6f7f9;
+        color: #1f2937;
+      }
+      .report {
+        padding: 24px 32px 10px 32px;
+      }
+      h1 {
+        margin: 0 0 8px 0;
+        font-size: 26px;
+      }
+      h2 {
+        margin-top: 0;
+        font-size: 17px;
+      }
+      .subtitle {
+        color: #4b5563;
+        margin-bottom: 16px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 14px;
+      }
+      .card {
+        background: white;
+        border-radius: 14px;
+        padding: 16px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th, td {
+        padding: 7px 9px;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+        white-space: nowrap;
+      }
+      .matrix td {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        text-align: right;
+      }
+      code {
+        background: #f3f4f6;
+        padding: 2px 5px;
+        border-radius: 6px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+      .note {
+        color: #6b7280;
+        font-size: 13px;
+      }
+      .warning {
+        background: #fff7ed;
+        color: #9a3412;
+        border: 1px solid #fed7aa;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin: 14px 0;
+      }
+      .plot {
+        margin: 8px 24px 28px 24px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+      }
+    </style>
+    
+    </head>
+    <body>
+      
+    <div class="report">
+      <h1>Extrinsic Visualization Report</h1>
+      <div class="subtitle">
+        Convention:
+        <code>p_IMU = T_IMU_LiDAR · p_LiDAR</code>
+      </div>
+
+      
+
+      <div class="grid">
+        <div class="card">
+          <h2>4×4 外参矩阵</h2>
+          <table class='matrix'><tr><td>0.000000</td><td>-0.707107</td><td>-0.707107</td><td>-0.141421</td></tr><tr><td>0.000000</td><td>-0.707107</td><td>0.707107</td><td>0.141421</td></tr><tr><td>-1.000000</td><td>0.000000</td><td>0.000000</td><td>-0.476800</td></tr><tr><td>0.000000</td><td>0.000000</td><td>0.000000</td><td>1.000000</td></tr></table>
+        </div>
+
+        <div class="card">
+          <h2>平移向量，单位：m</h2>
+          <p><code>t = [-0.141421, 0.141421, -0.476800] m</code></p>
+          <p>含义：<b>LiDAR</b> 坐标系原点在 <b>IMU</b> 坐标系下的位置。</p>
+          <p>平移模长：<code>0.517048 m</code></p>
+          <p class="note">输入平移单位参数：<code>m</code>，已统一换算到米。</p>
+        </div>
+
+        <div class="card">
+          <h2>旋转角度表达，单位：degree</h2>
+          <p>Euler ZYX / RPY 约定：</p>
+          <p><code>R = Rz(yaw) · Ry(pitch) · Rx(roll)</code></p>
+          <table>
+            <tr><th>roll around X</th><td>-135.000000°</td></tr>
+            <tr><th>pitch around Y</th><td>90.000000°</td></tr>
+            <tr><th>yaw around Z</th><td>0.000000°</td></tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <h2>其他旋转表达</h2>
+          <p>Quaternion, ROS xyzw:</p>
+          <p><code>[-0.653281, 0.270598, 0.653281, 0.270598]</code></p>
+          <p>Axis-angle:</p>
+          <p><code>axis=[-0.678598, 0.281085, 0.678598], angle=148.600285°</code></p>
+        </div>
+
+        <div class="card">
+          <h2>旋转矩阵检查</h2>
+          <table>
+            <tr><th>det(R)</th><td>0.999999997</td><td>理想值：+1</td></tr>
+            <tr><th>||RᵀR-I||F</th><td>0.000000005</td><td>理想值：0</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+      <div class="plot">
+        <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js" integrity="sha256-oy6Be7Eh6eiQFs5M7oXuPxxm9qbJXEtTpfSI93dW16Q=" crossorigin="anonymous"></script>                <div id="4b29efa6-aa79-4184-aaf5-bef958a688bb" class="plotly-graph-div" style="height:780px; width:1150px;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("4b29efa6-aa79-4184-aaf5-bef958a688bb")) {                    Plotly.newPlot(                        "4b29efa6-aa79-4184-aaf5-bef958a688bb",                        [{"legendgroup":"IMU","marker":{"size":5},"mode":"markers+text","name":"IMU origin","showlegend":true,"text":["IMU\u003cbr\u003eorigin"],"textposition":"top center","x":[0.0],"y":[0.0],"z":[0.0],"type":"scatter3d"},{"legendgroup":"IMU","line":{"color":"#e74c3c","width":8},"mode":"lines","name":"IMU +X","opacity":1.0,"showlegend":true,"x":[0.0,5.0],"y":[0.0,0.0],"z":[0.0,0.0],"type":"scatter3d"},{"anchor":"tip","colorscale":[[0,"#e74c3c"],[1,"#e74c3c"]],"hoverinfo":"skip","legendgroup":"IMU","name":"IMU +X arrow","opacity":1.0,"showlegend":false,"showscale":false,"sizemode":"absolute","sizeref":0.6,"u":[1.0],"v":[0.0],"w":[0.0],"x":[5.0],"y":[0.0],"z":[0.0],"type":"cone"},{"hoverinfo":"skip","legendgroup":"IMU","mode":"text","name":"IMU +X label","showlegend":false,"text":["IMU\u003cbr\u003e+X"],"textfont":{"color":"#e74c3c","size":13},"x":[5.6499999999999995],"y":[0.0],"z":[0.0],"type":"scatter3d"},{"legendgroup":"IMU","line":{"color":"#2ecc71","width":8},"mode":"lines","name":"IMU +Y","opacity":1.0,"showlegend":true,"x":[0.0,0.0],"y":[0.0,5.0],"z":[0.0,0.0],"type":"scatter3d"},{"anchor":"tip","colorscale":[[0,"#2ecc71"],[1,"#2ecc71"]],"hoverinfo":"skip","legendgroup":"IMU","name":"IMU +Y arrow","opacity":1.0,"showlegend":false,"showscale":false,"sizemode":"absolute","sizeref":0.6,"u":[0.0],"v":[1.0],"w":[0.0],"x":[0.0],"y":[5.0],"z":[0.0],"type":"cone"},{"hoverinfo":"skip","legendgroup":"IMU","mode":"text","name":"IMU +Y label","showlegend":false,"text":["IMU\u003cbr\u003e+Y"],"textfont":{"color":"#2ecc71","size":13},"x":[0.0],"y":[5.6499999999999995],"z":[0.0],"type":"scatter3d"},{"legendgroup":"IMU","line":{"color":"#3498db","width":8},"mode":"lines","name":"IMU +Z","opacity":1.0,"showlegend":true,"x":[0.0,0.0],"y":[0.0,0.0],"z":[0.0,5.0],"type":"scatter3d"},{"anchor":"tip","colorscale":[[0,"#3498db"],[1,"#3498db"]],"hoverinfo":"skip","legendgroup":"IMU","name":"IMU +Z arrow","opacity":1.0,"showlegend":false,"showscale":false,"sizemode":"absolute","sizeref":0.6,"u":[0.0],"v":[0.0],"w":[1.0],"x":[0.0],"y":[0.0],"z":[5.0],"type":"cone"},{"hoverinfo":"skip","legendgroup":"IMU","mode":"text","name":"IMU +Z label","showlegend":false,"text":["IMU\u003cbr\u003e+Z"],"textfont":{"color":"#3498db","size":13},"x":[0.0],"y":[0.0],"z":[5.6499999999999995],"type":"scatter3d"},{"legendgroup":"LiDAR","marker":{"size":5},"mode":"markers+text","name":"LiDAR origin","showlegend":true,"text":["LiDAR\u003cbr\u003eorigin"],"textposition":"top center","x":[-0.1414213562],"y":[0.1414213562],"z":[-0.4768],"type":"scatter3d"},{"legendgroup":"LiDAR","line":{"color":"#e74c3c","width":6},"mode":"lines","name":"LiDAR +X","opacity":0.88,"showlegend":true,"x":[-0.1414213562,-0.1414213562],"y":[0.1414213562,0.1414213562],"z":[-0.4768,-5.4768],"type":"scatter3d"},{"anchor":"tip","colorscale":[[0,"#e74c3c"],[1,"#e74c3c"]],"hoverinfo":"skip","legendgroup":"LiDAR","name":"LiDAR +X arrow","opacity":0.88,"showlegend":false,"showscale":false,"sizemode":"absolute","sizeref":0.6,"u":[0.0],"v":[0.0],"w":[-1.0],"x":[-0.1414213562],"y":[0.1414213562],"z":[-5.4768],"type":"cone"},{"hoverinfo":"skip","legendgroup":"LiDAR","mode":"text","name":"LiDAR +X label","showlegend":false,"text":["LiDAR\u003cbr\u003e+X"],"textfont":{"color":"#e74c3c","size":13},"x":[-0.1414213562],"y":[0.1414213562],"z":[-6.126799999999999],"type":"scatter3d"},{"legendgroup":"LiDAR","line":{"color":"#2ecc71","width":6},"mode":"lines","name":"LiDAR +Y","opacity":0.88,"showlegend":true,"x":[-0.1414213562,-3.6769552621327377],"y":[0.1414213562,-3.394112549732738],"z":[-0.4768,-0.4768],"type":"scatter3d"},{"anchor":"tip","colorscale":[[0,"#2ecc71"],[1,"#2ecc71"]],"hoverinfo":"skip","legendgroup":"LiDAR","name":"LiDAR +Y arrow","opacity":0.88,"showlegend":false,"showscale":false,"sizemode":"absolute","sizeref":0.6,"u":[-0.7071067811865476],"v":[-0.7071067811865476],"w":[-0.0],"x":[-3.6769552621327377],"y":[-3.394112549732738],"z":[-0.4768],"type":"cone"},{"hoverinfo":"skip","legendgroup":"LiDAR","mode":"text","name":"LiDAR +Y label","showlegend":false,"text":["LiDAR\u003cbr\u003e+Y"],"textfont":{"color":"#2ecc71","size":13},"x":[-4.136574669903993],"y":[-3.853731957503993],"z":[-0.4768],"type":"scatter3d"},{"legendgroup":"LiDAR","line":{"color":"#3498db","width":6},"mode":"lines","name":"LiDAR +Z","opacity":0.88,"showlegend":true,"x":[-0.1414213562,-3.6769552621327377],"y":[0.1414213562,3.6769552621327377],"z":[-0.4768,-0.4768],"type":"scatter3d"},{"anchor":"tip","colorscale":[[0,"#3498db"],[1,"#3498db"]],"hoverinfo":"skip","legendgroup":"LiDAR","name":"LiDAR +Z arrow","opacity":0.88,"showlegend":false,"showscale":false,"sizemode":"absolute","sizeref":0.6,"u":[-0.7071067811865476],"v":[0.7071067811865476],"w":[0.0],"x":[-3.6769552621327377],"y":[3.6769552621327377],"z":[-0.4768],"type":"cone"},{"hoverinfo":"skip","legendgroup":"LiDAR","mode":"text","name":"LiDAR +Z label","showlegend":false,"text":["LiDAR\u003cbr\u003e+Z"],"textfont":{"color":"#3498db","size":13},"x":[-4.136574669903993],"y":[4.136574669903993],"z":[-0.4768],"type":"scatter3d"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermap":[{"type":"scattermap","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"scene":{"xaxis":{"title":{"text":"IMU X \u002f m"},"range":[-7.196077628100001,8.5191223719],"showbackground":true},"yaxis":{"title":{"text":"IMU Y \u002f m"},"range":[-7.054656271900001,8.6605437281],"showbackground":true},"zaxis":{"title":{"text":"IMU Z \u002f m"},"range":[-8.096,7.619200000000001],"showbackground":true},"camera":{"eye":{"x":1.7,"y":1.7,"z":1.3},"up":{"x":0,"y":0,"z":1}},"aspectmode":"cube"},"legend":{"title":{"text":"Frame \u002f Axis"},"x":0.01,"y":0.98,"bgcolor":"rgba(255,255,255,0.75)"},"margin":{"l":0,"r":0,"b":0,"t":70},"title":{"text":"3D Coordinate Frames: p_IMU = T_IMU_LiDAR \u00b7 p_LiDAR"},"width":1150,"height":780,"updatemenus":[{"buttons":[{"args":[{"scene.camera":{"eye":{"x":1.7,"y":1.7,"z":1.3},"up":{"x":0,"y":0,"z":1}}}],"label":"\u9ed8\u8ba4\u659c\u89c6","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":2.2,"y":0.0,"z":0.0},"up":{"x":0.0,"y":0.0,"z":1.0}}}],"label":"\u6cbf IMU +X \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":-2.2,"y":-0.0,"z":-0.0},"up":{"x":0.0,"y":0.0,"z":1.0}}}],"label":"\u6cbf IMU -X \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":0.0,"y":2.2,"z":0.0},"up":{"x":0.0,"y":0.0,"z":1.0}}}],"label":"\u6cbf IMU +Y \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":-0.0,"y":-2.2,"z":-0.0},"up":{"x":0.0,"y":0.0,"z":1.0}}}],"label":"\u6cbf IMU -Y \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":0.0,"y":0.0,"z":2.2},"up":{"x":0.0,"y":1.0,"z":0.0}}}],"label":"\u6cbf IMU +Z \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":-0.0,"y":-0.0,"z":-2.2},"up":{"x":0.0,"y":1.0,"z":0.0}}}],"label":"\u6cbf IMU -Z \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":0.0,"y":0.0,"z":-2.2},"up":{"x":-0.7071067811865476,"y":0.7071067811865476,"z":0.0}}}],"label":"\u6cbf LiDAR +X \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":-0.0,"y":-0.0,"z":2.2},"up":{"x":-0.7071067811865476,"y":0.7071067811865476,"z":0.0}}}],"label":"\u6cbf LiDAR -X \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":-1.5556349186104048,"y":-1.5556349186104048,"z":-0.0},"up":{"x":-0.7071067811865476,"y":0.7071067811865476,"z":0.0}}}],"label":"\u6cbf LiDAR +Y \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":1.5556349186104048,"y":1.5556349186104048,"z":0.0},"up":{"x":-0.7071067811865476,"y":0.7071067811865476,"z":0.0}}}],"label":"\u6cbf LiDAR -Y \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":-1.5556349186104048,"y":1.5556349186104048,"z":0.0},"up":{"x":-0.7071067811865476,"y":-0.7071067811865476,"z":-0.0}}}],"label":"\u6cbf LiDAR +Z \u770b","method":"relayout"},{"args":[{"scene.camera":{"eye":{"x":1.5556349186104048,"y":-1.5556349186104048,"z":-0.0},"up":{"x":-0.7071067811865476,"y":-0.7071067811865476,"z":0.0}}}],"label":"\u6cbf LiDAR -Z \u770b","method":"relayout"}],"direction":"down","showactive":true,"type":"dropdown","x":0.76,"xanchor":"left","y":1.06,"yanchor":"top"}]},                        {"responsive": true}                    )                };            </script>        </div>
+      </div>
+    </body>
+    </html>
+    
