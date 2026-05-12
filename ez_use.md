@@ -5,7 +5,7 @@
 # 生成html 
 # eg. LiDAR 2 IMU: soure = LiDAR, target = IMU
 # --axis-length 5 每根轴的长度
-python extrinsic_visualizer_plus.py --target IMU --source LiDAR --file example_data/example.json --axis-length 5 --output example/lidar_to_imu.html
+python extrinsic_visualizer_plus.py --target IMU --source LiDAR --file example_data/example.json --axis-length 5 --output example_data/lidar_to_imu.html
 
 ```
 ```bash
